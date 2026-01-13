@@ -1,8 +1,14 @@
 package com.algaworks.algadelivery.delivery.tracking.domain.model;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
 
 @EqualsAndHashCode
+@AllArgsConstructor
+@Builder
+@Getter
 public class ContactPoint {
 
     private String zipCode;
@@ -12,3 +18,4 @@ public class ContactPoint {
     private String name;
     private String phone;
 }
+//Value Object - VO não pode ter o seu valor alterado
