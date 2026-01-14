@@ -1,37 +1,38 @@
-package com.algaworks.algadelivery.delivery.tracking.domain.model;
+package com.algaworks.algadelivery.delivery.tracking.domain.repository;
 
-import com.algaworks.algadelivery.delivery.tracking.domain.exception.DomainException;
+import com.algaworks.algadelivery.delivery.tracking.domain.model.ContactPoint;
+import com.algaworks.algadelivery.delivery.tracking.domain.model.Delivery;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
 import java.math.BigDecimal;
 import java.time.Duration;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-class DeliveryTest {
+@DataJpaTest
+@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
+class DeliveryRepositoryTest {
+
+    @Autowired
+    private DeliveryRepository deliveryRepository;
 
     @Test
-    public void shouldChangeToPlace(){
+    public void shouldPersist(){
         Delivery delivery = Delivery.draft();
 
         delivery.editPreparationDetails(createdValidPreparationDetails());
 
-        delivery.place();
+        delivery.addItem("Computador", 2);
+        delivery.addItem("Notebook", 2);
 
-        assertEquals(DeliveryStatus.WAITING_FOR_COURIER, delivery.getStatus());
-        assertNotNull(delivery.getPlacedAt());
-    }
+        deliveryRepository.saveAndFlush(delivery);
 
-    @Test
-    public void shouldNotPlace(){
-        Delivery delivery = Delivery.draft();
+        Delivery persistedDelivery = deliveryRepository.findById(delivery.getId()).orElseThrow();
 
-        assertThrows(DomainException.class, ()->{
-            delivery.place();
-        });
-
-        assertEquals(DeliveryStatus.DRAFT, delivery.getStatus());
-        assertNull(delivery.getPlacedAt());
+        assertEquals(2, persistedDelivery.getItems().size());
     }
 
     private Delivery.PreparationDetails createdValidPreparationDetails() {
