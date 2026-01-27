@@ -44,8 +44,11 @@ public class DeliveryController {
     @SneakyThrows
     @GetMapping
     public PagedModel<Delivery> findAll(@PageableDefault Pageable pageable) {
-        int millis = new Random().nextInt(400);
-        Thread.sleep(400);
+        if(Math.random() < 0.7){
+            throw new RuntimeException();
+        }
+        int millis = new Random().nextInt(300);
+        Thread.sleep(300);
         return new PagedModel<>(deliveryRepository.findAll(pageable));
     }
 
